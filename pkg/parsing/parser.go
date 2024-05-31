@@ -363,7 +363,12 @@ func (p *Parser) nud(token token) (ASTNode, error) {
 		var parsed any
 		err := json.Unmarshal([]byte(token.value), &parsed)
 		if err != nil {
-			return ASTNode{}, err
+			// legacy literal parsing
+			temp := fmt.Sprintf("\"%s\"", token.value)
+			err := json.Unmarshal([]byte(temp), &parsed)
+			if err != nil {
+				return ASTNode{}, err
+			}
 		}
 		return ASTNode{NodeType: ASTLiteral, Value: parsed}, nil
 	case TOKStringLiteral:
