@@ -179,6 +179,26 @@ func TestParsingErrors(t *testing.T) {
 	}
 }
 
+var backquoteStringLiteralTests = []struct {
+	expression    string
+	expectedValue string
+}{
+	{"`a string`", "a string"},
+	{"`2023-01-01T12:00:00Z`", "2023-01-01T12:00:00Z"},
+	{"`%Y-%m-%d %H:%M:%S`", "%Y-%m-%d %H:%M:%S"},
+	{"`foo\\u002B`", "foo+"},
+}
+
+func TestBackquotedStringLiteral(t *testing.T) {
+	assert := assert.New(t)
+	parser := NewParser()
+	for _, tt := range backquoteStringLiteralTests {
+		result, err := parser.Parse(tt.expression)
+		assert.Nil(err)
+		assert.Equal(tt.expectedValue, result.Value)
+	}
+}
+
 var prettyPrinted = `ASTProjection {
   children: {
     ASTField {
